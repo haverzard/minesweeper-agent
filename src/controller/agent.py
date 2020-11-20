@@ -9,6 +9,7 @@ class MinesweeperAgent():
         self.board = None
 
     def init_agent(self, size, coords):
+        self.env.reset()
         self.env.assert_string(f"(board-size {size})")
         self.board = np.zeros((size, size), dtype=int)
 
@@ -17,11 +18,13 @@ class MinesweeperAgent():
                 for coord in coords:
                     if coord in [(col-1, row), (col, row-1), (col+1, row), (col, row+1), (col-1, row-1), (col-1, row+1), (col+1, row-1), (col+1, row+1)]:
                         if (col, row) not in coords:
-                            self.board[row, col] += 1
+                            self.board[size-row-1, col] += 1
         print(self.board)
         for row in range(size):
             for col in range(size):
-                self.env.assert_string(f"(tile (x {col}) (y {row}) (value {self.board[row][col]}))")
+                self.env.assert_string(f"(tile (x {col}) (y {size-row-1}) (value {self.board[row][col]}))")
+
+        self.env.run()
 
         for f in self.env.facts():
             print(f)
@@ -29,5 +32,5 @@ class MinesweeperAgent():
 if __name__ == "__main__":
     from input import process_input
     size, coords = process_input("../tests/tc1.txt")
-    ms = MinesweeperAgent(["model/template_facts.clp"])
+    ms = MinesweeperAgent(["model/template_facts.clp", "model/rules.clp", "model/minesweeper.clp"])
     ms.init_agent(size, coords)
