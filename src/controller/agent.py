@@ -20,6 +20,10 @@ class MinesweeperAgent():
                     if coord in [(col-1, row), (col, row-1), (col+1, row), (col, row+1), (col-1, row-1), (col-1, row+1), (col+1, row-1), (col+1, row+1)]:
                         if (col, row) not in coords:
                             self.board[size-row-1, col] += 1
+
+        for coord in coords:
+            self.env.assert_string(f"(bomb {coord[0]} {coord[1]})")
+
         print(self.board)
         for row in range(size):
             for col in range(size):
