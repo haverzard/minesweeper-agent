@@ -162,6 +162,118 @@
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y))))
 
+;;; 
+(deffunction discover-free (?x ?y ?s)
+    (or
+        (if (inRange ?x (+ ?y 1) ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+        (if (inRange ?x (- ?y 1) ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+        (if (inRange (- ?x 1) ?y ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+        (if (inRange (+ ?x 1) ?y ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+        (if (inRange (- ?x 1) (- ?y 1) ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+        (if (inRange (- ?x 1) (+ ?y 1) ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+        (if (inRange (+ ?x 1) (- ?y 1) ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+        (if (inRange (+ ?x 1) (+ ?y 1) ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
+                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
+            )
+        )
+    )
+)
+
+;;; Open nobomb tile for discovery
+(defrule open-nobomb
+    (tile (x ?x) (y ?y) (value ?))
+    (bombNeighbours (x ?x) (y ?y) (count 0))
+    (clicked (x ?x) (y ?y))
+    (board-size ?s)
+    =>
+    (discover-free ?x ?y ?s))
+
+
 ;;; Flag all closed neighbour tiles as bombs
 (deffunction flaggedBombs (?x ?y ?s)
     (or
