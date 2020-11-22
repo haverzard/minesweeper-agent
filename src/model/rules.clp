@@ -3,9 +3,22 @@
 ;;; #######################
 
 ;;; #######################
-;;; BOMB NEIGHBOURS
+;;; HELPER FUNCTIONS
 ;;; #######################
 
+;;; Return True if neighbour is on the board, else False
+(deffunction inRange (?x ?y ?s)
+    (= (if (and (>= ?x 0) (< ?x ?s) (>= ?y 0) (< ?y ?s)) then 1 else 0) 1)
+)
+
+;;; Return 1 if neighbour is on the board, else 0
+(deffunction inRangeCount (?x ?y ?s)
+    (if (and (>= ?x 0) (< ?x ?s) (>= ?y 0) (< ?y ?s)) then 1 else 0)
+)
+
+;;; #######################
+;;; BOMB NEIGHBOURS
+;;; #######################
 ;;; Set bomb neighbours' count with tile's value
 (defrule init-bomb-counts
     (declare (salience 30))
@@ -15,16 +28,50 @@
     (assert (bombNeighbours (x ?x) (y ?y) (count ?v)))
 )
 
+;;; Decrease the bombs' count for all neighbours of the flagged tile
+(defrule bomb-tile-decrement
+    (declare (salience 10))
+    (flagged ?x ?y)
+    (board-size ?s)
+    =>
+    (and (inRange ?x (- ?y 1) ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange ?x (+ ?y 1) ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (- ?x 1) ?y ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (+ ?x 1) ?y ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (+ ?x 1) (- ?y 1) ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (+ ?x 1) (+ ?y 1) ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (- ?x 1) (- ?y 1) ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (- ?x 1) (+ ?y 1) ?s)
+        (do-for-fact ((?ff bombNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+)
+
 ;;; #######################
 ;;; CLOSED NEIGHBOURS
 ;;; #######################
 ;;; Keep track of closed neighbours
-
-;;; Return 1 if neighbour is on the board, else 0
-(deffunction inRangeCount (?x ?y ?s)
-    (if (and (>= ?x 0) (< ?x ?s) (>= ?y 0) (< ?y ?s)) then 1 else 0)
-)
-
 ;;; Initialize all tiles with its closed neighbours' count
 (defrule init-closed
     (declare (salience 30))
@@ -44,15 +91,50 @@
     )))
 )
 
+;;; Decrease the closed neighbour' count for all neighbours of the clicked/flagged tile
+(defrule closed-tile-decrement
+    (declare (salience 20))
+    (clicked (x ?x) (y ?y))
+    (board-size ?s)
+    =>
+    (and (inRange ?x (- ?y 1) ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange ?x (+ ?y 1) ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (- ?x 1) ?y ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (+ ?x 1) ?y ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (+ ?x 1) (- ?y 1) ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (+ ?x 1) (+ ?y 1) ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (- ?x 1) (- ?y 1) ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+    (and (inRange (- ?x 1) (+ ?y 1) ?s)
+        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
+            (modify ?ff (count (- ?ff:count 1))))
+    )
+)
+
 ;;; #######################
 ;;; OPEN TILE (DISCOVER)
 ;;; #######################
 ;;; Open tiles that surround clicked tile
-
-;;; Return True if neighbour is on the board, else False
-(deffunction inRange (?x ?y ?s)
-    (= (if (and (>= ?x 0) (< ?x ?s) (>= ?y 0) (< ?y ?s)) then 1 else 0) 1)
-)
 
 ;;; Open tile that has been clicked
 ;;; Inherits open-condition value
@@ -94,46 +176,6 @@
         and (assert (opened (x (- ?x 1)) (y (+ ?y 1))))
         (assert (open-condition (x (- ?x 1)) (y (+ ?y 1)) (cond ?z)))
     ))
-)
-
-;;; Decrement the closed neighbour' count for all neighbours of the clicked/flagged tile
-(defrule closed-tile-decrement
-    (declare (salience 20))
-    (clicked (x ?x) (y ?y))
-    (board-size ?s)
-    =>
-    (and (inRange ?x (- ?y 1) ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (inRange ?x (+ ?y 1) ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (inRange (- ?x 1) ?y ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (inRange (+ ?x 1) ?y ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (inRange (+ ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (inRange (+ ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (inRange (- ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (inRange (- ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff closedNeighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
 )
 
 ;;; #######################
