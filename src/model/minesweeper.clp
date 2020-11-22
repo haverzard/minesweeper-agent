@@ -11,6 +11,7 @@
     (assert (clicked (x 0) (y 0)))
     (assert (open-condition (x 0) (y 0) (cond 1)))
     (assert (nobomb 0 0))
+    (assert (n-iteration 0))
 )
 
 ;;; Error Detection
@@ -27,25 +28,39 @@
     (assert (no-start))
 )
 
+;;; Error Detection
+(defrule wrong-bomb
+    (declare (salience 100))
+    (flagged (x ?x) (y ?y))
+    (not (bomb ?x ?y))
+    =>
+    (printout t "WRONG PREDICTION :(" crlf)
+    (exit)
+)
 
 ;;; Print function
 (deffunction print-im (?s)
-    (bind ?i 0)
-    (while (< ?i ?s) do 
-        (bind ?j (- ?s 1))
-        (while (>= ?j 0) do
-            (if (any-factp ((?f opened)) (and (= ?f:x ?i) (= ?f:y ?j)))
+    (bind ?i (- ?s 1))
+    (while (>= ?i 0) do 
+        (bind ?j 0)
+        (while (< ?j (- ?s 1)) do
+            (if (any-factp ((?f clicked)) (and (= ?f:x ?j) (= ?f:y ?i)))
                 then
-                (do-for-fact ((?f2 tile)) (and (= ?f2:x ?i) (= ?f2:y ?j))
-                    (printout ?f2:count t " ")
+                (if (any-factp ((?f2 flagged)) (and (= ?f2:x ?j) (= ?f2:y ?i)))
+                    then
+                    (printout t "F ")
+                    else
+                    (do-for-fact ((?f3 tile)) (and (= ?f3:x ?j) (= ?f3:y ?i))
+                        (printout t ?f3:value " ")
+                    )
                 )
                 else
                 (printout t "X ")
             )
-            (bind ?j (- ?j 1))
+            (bind ?j (+ ?j 1))
         ?j)
         (printout t crlf)
-        (bind ?i (+ ?i 1))
+        (bind ?i (- ?i 1))
     ?i)
 )
 
@@ -53,7 +68,8 @@
 (defrule print
     (declare (salience 100))
     (board-size ?s)
+    (n-iteration ?i)
     =>
-    (printout t "ITERATION " ?*iteration* crlf)
+    (printout t "ITERATION " ?i crlf)
     (print-im ?s)
 )
