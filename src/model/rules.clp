@@ -31,7 +31,7 @@
 ;;; Decrease the bombs' count for all neighbours of the flagged tile
 (defrule bomb-tile-decrement
     (declare (salience 10))
-    (flagged ?x ?y)
+    (flagged (x ?x) (y ?y))
     (board-size ?s)
     =>
     (and (inRange ?x (- ?y 1) ?s)
@@ -197,7 +197,7 @@
 (defrule nobomb-2
     (declare (salience 15))
     (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
-    (not (flagged ?x ?y))
+    (not (flagged (x ?x) (y ?y)))
     (not (open-condition (x ?x) (y ?y) (cond 0)))
     (opened (x ?x) (y ?y))
     =>
@@ -349,7 +349,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -363,7 +363,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -377,7 +377,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -391,7 +391,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -405,7 +405,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -419,7 +419,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -433,7 +433,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -447,7 +447,7 @@
                     then
                     else
                     (and
-                        (assert (flagged ?ff:x ?ff:y))
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
                         (assert (clicked (x ?ff:x) (y ?ff:y)))
                         (assert (bomb ?ff:x ?ff:y))
                     )
@@ -467,4 +467,6 @@
     (opened (x ?x) (y ?y))
     (board-size ?s)
     =>
-    (flaggedBombs ?x ?y ?s))
+    (flaggedBombs ?x ?y ?s)
+    (assert (n-iteration (+ ?*iteration* 1)))
+    (bind ?*iteration* (+ ?*iteration* 1)))

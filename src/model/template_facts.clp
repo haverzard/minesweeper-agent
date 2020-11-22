@@ -30,6 +30,10 @@
    (slot y)
    (slot cond))
 
+(deftemplate flagged
+   (slot x)
+   (slot y))
+
 (defglobal
    ?*iteration* = 0
 )
