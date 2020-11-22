@@ -42,51 +42,51 @@
 )
 
 ;;; Open tile that has been clicked
-;;; Inherits justopen value
+;;; Inherits open-condition value
 (defrule open-tile
     (declare (salience 20))
-    (clicked ?x ?y)
-    (justopen ?x ?y ?z)
+    (clicked (x ?x) (y ?y))
+    (open-condition (x ?x) (y ?y) (cond ?z))
     (board-size ?s)
     =>
     (and (inRange ?x (- ?y 1) ?s) (
-        and (assert (opened ?x (- ?y 1)))
-        (assert (justopen ?x (- ?y 1) ?z))
+        and (assert (opened (x ?x) (y (- ?y 1))))
+        (assert (open-condition (x ?x) (y (- ?y 1)) (cond ?z)))
     ))
     (and (inRange ?x (+ ?y 1) ?s) (
-        and (assert (opened ?x (+ ?y 1)))
-        (assert (justopen ?x (+ ?y 1) ?z))
+        and (assert (opened (x ?x) (y (+ ?y 1))))
+        (assert (open-condition (x ?x) (y (+ ?y 1)) (cond ?z)))
     ))
     (and (inRange (- ?x 1) ?y ?s) (
-        and (assert (opened (- ?x 1) ?y))
-        (assert (justopen (- ?x 1) ?y ?z))
+        and (assert (opened (x (- ?x 1)) (y ?y)))
+        (assert (open-condition (x (- ?x 1)) (y ?y) (cond ?z)))
     ))
     (and (inRange (+ ?x 1) ?y ?s) (
-        and (assert (opened (+ ?x 1) ?y))
-        (assert (justopen (+ ?x 1) ?y ?z))
+        and (assert (opened (x (+ ?x 1)) (y ?y)))
+        (assert (open-condition (x (+ ?x 1)) (y ?y) (cond ?z)))
     ))
     (and (inRange (+ ?x 1) (- ?y 1) ?s) (
-        and (assert (opened (+ ?x 1) (- ?y 1)))
-        (assert (justopen (+ ?x 1) (- ?y 1) ?z))
+        and (assert (opened (x (+ ?x 1)) (y (- ?y 1))))
+        (assert (open-condition (x (+ ?x 1)) (y (- ?y 1)) (cond ?z)))
     ))    
     (and (inRange (+ ?x 1) (+ ?y 1) ?s) (
-        and (assert (opened (+ ?x 1) (+ ?y 1)))
-        (assert (justopen (+ ?x 1) (+ ?y 1) ?z))
+        and (assert (opened (x (+ ?x 1)) (y (+ ?y 1))))
+        (assert (open-condition (x (+ ?x 1)) (y (+ ?y 1)) (cond ?z)))
     ))
     (and (inRange (- ?x 1) (- ?y 1) ?s) (
-        and (assert (opened (- ?x 1) (- ?y 1)))
-        (assert (justopen (- ?x 1) (- ?y 1) ?z))
+        and (assert (opened (x (- ?x 1)) (y (- ?y 1))))
+        (assert (open-condition (x (- ?x 1)) (y (- ?y 1)) (cond ?z)))
     ))
     (and (inRange (- ?x 1) (+ ?y 1) ?s) (
-        and (assert (opened (- ?x 1) (+ ?y 1)))
-        (assert (justopen (- ?x 1) (+ ?y 1) ?z))
+        and (assert (opened (x (- ?x 1)) (y (+ ?y 1))))
+        (assert (open-condition (x (- ?x 1)) (y (+ ?y 1)) (cond ?z)))
     ))
 )
 
-;;; Decrement the closed neighbour' count for all neighbours of the opened tile
-(defrule open-tile-decrement
+;;; Decrement the closed neighbour' count for all neighbours of the clicked/flagged tile
+(defrule closed-tile-decrement
     (declare (salience 20))
-    (clicked ?x ?y)
+    (clicked (x ?x) (y ?y))
     (board-size ?s)
     =>
     (and (inRange ?x (- ?y 1) ?s)
@@ -131,20 +131,21 @@
 (defrule nobomb-1
     (declare (salience 10))
     (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
-    (justopen ?x ?y ?a&:(= 1 ?a))
-    (opened ?x ?y)
+    (open-condition (x ?x) (y ?y) (cond ?a&:(= 1 ?a)))
+    (opened (x ?x) (y ?y))
     =>
     (assert (nobomb ?x ?y))
-    (assert (clicked ?x ?y))
-    (assert (justopen ?x ?y 0)))
+    (assert (clicked (x ?x) (y ?y)))
+    (assert (open-condition (x ?x) (y ?y) (cond 0))))
 
 ;;; No bomb tile and no numbered tile should discover other tiles
 (defrule nobomb-2
     (declare (salience 15))
     (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
     (not (flagged ?x ?y))
-    (not (justopen ?x ?y 0))
-    (opened ?x ?y)
+    (not (open-condition (x ?x) (y ?y) (cond 0)))
+    (opened (x ?x) (y ?y))
     =>
     (assert (nobomb ?x ?y))
-    (assert (clicked ?x ?y)))
+    (assert (clicked (x ?x) (y ?y))))
+
