@@ -8,9 +8,10 @@ class MinesweeperAgent():
             self.env.load(clp)
         self.board = None
 
-    def init_agent(self, size, coords):
+    def init_agent(self, size, bcounts, coords):
         self.env.reset()
         self.env.assert_string(f"(board-size {size})")
+        self.env.assert_string(f"(bombs-remaining {bcounts})")
         self.board = np.zeros((size, size), dtype=int)
 
         for row in range(size):
@@ -31,6 +32,6 @@ class MinesweeperAgent():
 
 if __name__ == "__main__":
     from input import process_input
-    size, coords = process_input("../tests/tc1.txt")
+    size, bcounts, coords = process_input("../tests/tc1.txt")
     ms = MinesweeperAgent(["model/template_facts.clp", "model/rules.clp", "model/minesweeper.clp"])
-    ms.init_agent(size, coords)
+    ms.init_agent(size, bcounts, coords)

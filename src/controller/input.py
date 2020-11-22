@@ -6,7 +6,7 @@ def process_input(file):
     for i in range(bombs_count):
         x, y = map(int, data[i+2].split(", "))
         coords.append((x, y))
-    return size, coords
+    return size, bombs_count, coords
 
 if __name__ == "__main__":
     print(process_input("tests/tc1.txt"))
