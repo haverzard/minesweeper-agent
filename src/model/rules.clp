@@ -209,7 +209,7 @@
     (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
     (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
     (opened (x ?x) (y ?y))
-    (oof ?x ?y)
+    (opened-nobomb ?x ?y)
     =>
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y)))
@@ -220,7 +220,7 @@
     (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
     (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
     (opened (x ?x) (y ?y))
-    (oof ?x ?y)
+    (opened-nobomb ?x ?y)
     =>
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y)))
