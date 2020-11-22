@@ -205,7 +205,7 @@
     (assert (clicked (x ?x) (y ?y))))
 
 (defrule nobomb-3
-    (declare (salience 1))
+    (declare (salience 6))
     (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
     (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
     (opened (x ?x) (y ?y))
@@ -216,7 +216,7 @@
     (assert (open-condition (x ?x) (y ?y) (cond 1))))
 
 (defrule nobomb-4
-    (declare (salience 1))
+    (declare (salience 6))
     (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
     (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
     (opened (x ?x) (y ?y))
@@ -330,6 +330,7 @@
 
 ;;; Open nobomb tile for discovery
 (defrule open-nobomb
+    (declare (salience 10))
     (tile (x ?x) (y ?y) (value ?))
     (bombNeighbours (x ?x) (y ?y) (count 0))
     (clicked (x ?x) (y ?y))
