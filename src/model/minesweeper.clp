@@ -36,7 +36,9 @@
         (while (>= ?j 0) do
             (if (any-factp ((?f opened)) (and (= ?f:x ?i) (= ?f:y ?j)))
                 then
-                (printout t "A ")
+                (do-for-fact ((?f2 tile)) (and (= ?f2:x ?i) (= ?f2:y ?j))
+                    (printout ?f2:count t " ")
+                )
                 else
                 (printout t "X ")
             )
@@ -52,5 +54,6 @@
     (declare (salience 100))
     (board-size ?s)
     =>
+    (printout t "ITERATION " ?*iteration* crlf)
     (print-im ?s)
 )

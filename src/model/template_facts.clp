@@ -29,3 +29,7 @@
    (slot x)
    (slot y)
    (slot cond))
+
+(defglobal
+   ?*iteration* = 0
+)
