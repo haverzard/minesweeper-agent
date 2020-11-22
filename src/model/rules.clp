@@ -204,6 +204,28 @@
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y))))
 
+(defrule nobomb-3
+    (declare (salience 1))
+    (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
+    (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
+    (opened (x ?x) (y ?y))
+    (oof ?x ?y)
+    =>
+    (assert (nobomb ?x ?y))
+    (assert (clicked (x ?x) (y ?y)))
+    (assert (open-condition (x ?x) (y ?y) (cond 1))))
+
+(defrule nobomb-4
+    (declare (salience 1))
+    (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
+    (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
+    (opened (x ?x) (y ?y))
+    (oof ?x ?y)
+    =>
+    (assert (nobomb ?x ?y))
+    (assert (clicked (x ?x) (y ?y)))
+    (assert (open-condition (x ?x) (y ?y) (cond 0))))
+
 ;;; 
 (deffunction discover-free (?x ?y ?s)
     (or
