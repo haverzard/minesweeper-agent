@@ -5,79 +5,51 @@
 ;;; #######################
 ;;; OPEN TILE (DISCOVER)
 ;;; #######################
+;;; Open tiles that surround clicked tile
 
-;;; Open tiles that are not in the right-corner
-(defrule open-1
+;;; Return True if neighbour is on the board, else False
+(deffunction inRange (?x ?y ?s)
+    (= (if (and (>= ?x 0) (< ?x ?s) (>= ?y 0) (< ?y ?s)) then 1 else 0) 1)
+)
+
+;;; Open tile that has been clicked
+;;; Inherits justopen value
+(defrule open-tile
     (declare (salience 20))
     (clicked ?x ?y)
+    (justopen ?x ?y ?z)
     (board-size ?s)
-    (test (!= ?x (- ?s 1)))
     =>
-    (assert (opened (+ ?x 1) ?y)))
-
-;;; Open tiles that are not in the left-corner
-(defrule open-2
-    (declare (salience 20))
-    (clicked ?x ?y)
-    (board-size ?s)
-    (test (!= ?x 0))
-    =>
-    (assert (opened (- ?x 1) ?y)))
-
-;;; Open tiles that are not in the top-corner
-(defrule open-3
-    (declare (salience 20))
-    (clicked ?x ?y)
-    (board-size ?s)
-    (test (!= ?y (- ?s 1)))
-    =>
-    (assert (opened ?x (+ ?y 1))))
-
-;;; Open tiles that are not in the bottom-corner
-(defrule open-4
-    (declare (salience 20))
-    (clicked ?x ?y)
-    (board-size ?s)
-    (test (!= ?y 0))
-    =>
-    (assert (opened ?x (- ?y 1))))
-
-;;; Open tiles that are not in the top-left-corner
-(defrule open-5
-    (declare (salience 20))
-    (clicked ?x ?y)
-    (board-size ?s)
-    (test (!= ?x 0))
-    (test (!= ?y (- ?s 1)))
-    =>
-    (assert (opened (- ?x 1) (+ ?y 1))))
-
-;;; Open tiles that are not in the top-right-corner
-(defrule open-6
-    (declare (salience 20))
-    (clicked ?x ?y)
-    (board-size ?s)
-    (test (!= ?x (- ?s 1)))
-    (test (!= ?y (- ?s 1)))
-    =>
-    (assert (opened (+ ?x 1) (+ ?y 1))))
-
-;;; Open tiles that are not in the bottom-left-corner
-(defrule open-7
-    (declare (salience 20))
-    (clicked ?x ?y)
-    (board-size ?s)
-    (test (!= ?x 0))
-    (test (!= ?y 0))
-    =>
-    (assert (opened (- ?x 1) (- ?y 1))))
-
-;;; Open tiles that are not in the bottom-left-corner
-(defrule open-8
-    (declare (salience 20))
-    (clicked ?x ?y)
-    (board-size ?s)
-    (test (!= ?x (- ?s 1)))
-    (test (!= ?y 0))
-    =>
-    (assert (opened (+ ?x 1) (- ?y 1))))
+    (and (inRange ?x (- ?y 1) ?s) (
+        and (assert (opened ?x (- ?y 1)))
+        (assert (justopen ?x (- ?y 1) ?z))
+    ))
+    (and (inRange ?x (+ ?y 1) ?s) (
+        and (assert (opened ?x (+ ?y 1)))
+        (assert (justopen ?x (+ ?y 1) ?z))
+    ))
+    (and (inRange (- ?x 1) ?y ?s) (
+        and (assert (opened (- ?x 1) ?y))
+        (assert (justopen (- ?x 1) ?y ?z))
+    ))
+    (and (inRange (+ ?x 1) ?y ?s) (
+        and (assert (opened (+ ?x 1) ?y))
+        (assert (justopen (+ ?x 1) ?y ?z))
+    ))
+    (and (inRange (+ ?x 1) (- ?y 1) ?s) (
+        and (assert (opened (+ ?x 1) (- ?y 1)))
+        (assert (justopen (+ ?x 1) (- ?y 1) ?z))
+    ))    
+    (and (inRange (+ ?x 1) (+ ?y 1) ?s) (
+        and (assert (opened (+ ?x 1) (+ ?y 1)))
+        (assert (justopen (+ ?x 1) (+ ?y 1) ?z))
+    ))
+    (and (inRange (- ?x 1) (- ?y 1) ?s) (
+        and (assert (opened (- ?x 1) (- ?y 1)))
+        (assert (justopen (- ?x 1) (- ?y 1) ?z))
+    ))
+    (and (inRange (- ?x 1) (+ ?y 1) ?s) (
+        and (assert (opened (- ?x 1) (+ ?y 1)))
+        (assert (justopen (- ?x 1) (+ ?y 1) ?z))
+    ))
+)
