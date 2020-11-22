@@ -12,6 +12,11 @@
    (slot y)
    (slot count))
 
+(deftemplate bombNeighbours
+   (slot x)
+   (slot y)
+   (slot count))
+
 (deftemplate clicked
    (slot x)
    (slot y))

@@ -3,6 +3,19 @@
 ;;; #######################
 
 ;;; #######################
+;;; BOMB NEIGHBOURS
+;;; #######################
+
+;;; Set bomb neighbours' count with tile's value
+(defrule init-bomb-counts
+    (declare (salience 30))
+    (tile (x ?x) (y ?y) (value ?v))
+    (board-size ?s)
+    =>
+    (assert (bombNeighbours (x ?x) (y ?y) (count ?v)))
+)
+
+;;; #######################
 ;;; CLOSED NEIGHBOURS
 ;;; #######################
 ;;; Keep track of closed neighbours
