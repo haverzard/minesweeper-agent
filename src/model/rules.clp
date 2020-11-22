@@ -122,3 +122,29 @@
             (modify ?ff (count (- ?ff:count 1))))
     )
 )
+
+;;; #######################
+;;; NOBOMB & BOMB
+;;; #######################
+
+;;; Numbered tile should not have any bomb
+(defrule nobomb-1
+    (declare (salience 10))
+    (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
+    (justopen ?x ?y ?a&:(= 1 ?a))
+    (opened ?x ?y)
+    =>
+    (assert (nobomb ?x ?y))
+    (assert (clicked ?x ?y))
+    (assert (justopen ?x ?y 0)))
+
+;;; No bomb tile and no numbered tile should discover other tiles
+(defrule nobomb-2
+    (declare (salience 15))
+    (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
+    (not (flagged ?x ?y))
+    (not (justopen ?x ?y 0))
+    (opened ?x ?y)
+    =>
+    (assert (nobomb ?x ?y))
+    (assert (clicked ?x ?y)))
