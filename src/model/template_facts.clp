@@ -7,12 +7,12 @@
    (slot y)
    (slot value))
 
-(deftemplate closedNeighbours
+(deftemplate closed-neighbours
    (slot x)
    (slot y)
    (slot count))
 
-(deftemplate bombNeighbours
+(deftemplate bomb-neighbours
    (slot x)
    (slot y)
    (slot count))
