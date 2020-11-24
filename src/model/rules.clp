@@ -19,6 +19,8 @@
 ;;; #######################
 ;;; BOMB NEIGHBOURS
 ;;; #######################
+
+;;; INIT RULE
 ;;; Set bomb neighbours' count with tile's value
 (defrule init-bomb-counts
     (declare (salience 30))
@@ -29,6 +31,11 @@
 )
 
 ;;; Decrease the bombs' count for all neighbours of the flagged tile
+;;; Pre-conditions:
+;;; - Tile has been flagged (not duplicate)
+;;;
+;;; Actions:
+;;; - Decrease bombs' count for all neighbours of the flagged tile by 1
 (defrule bomb-tile-decrement
     (declare (salience 10))
     (flagged (x ?x) (y ?y))
@@ -72,6 +79,8 @@
 ;;; CLOSED NEIGHBOURS
 ;;; #######################
 ;;; Keep track of closed neighbours
+
+;;; INIT RULE
 ;;; Initialize all tiles with its closed neighbours' count
 (defrule init-closed
     (declare (salience 30))
@@ -91,7 +100,12 @@
     )))
 )
 
-;;; Decrease the closed neighbour' count for all neighbours of the clicked/flagged tile
+;;; Decrease the closed neighbours' count for all neighbours of the clicked tile
+;;; Pre-conditions:
+;;; - Tile has been clicked (not duplicate)
+;;;
+;;; Actions:
+;;; - Decrease closed neighbours' count for all neighbours of the clicked tile by 1
 (defrule closed-tile-decrement
     (declare (salience 20))
     (clicked (x ?x) (y ?y))
@@ -136,8 +150,17 @@
 ;;; #######################
 ;;; Open tiles that surround clicked tile
 
-;;; Open tile that has been clicked
-;;; Inherits open-condition value
+;;; Open neighbour's tiles of the tile that has been clicked
+;;; Pre-conditions:
+;;; - Tile has been clicked
+;;;
+;;; Actions:
+;;; - Inherits open-condition value to neighbours
+;;;     -> open-condition of non 0-valued tile should be different
+;;;        from 0-valued tile
+;;;     -> this is to stop the agent clicking neighbours 
+;;;        from non 0-valued tile because it can be a bomb
+;;; - Open neighbours tile for discovery
 (defrule open-tile
     (declare (salience 20))
     (clicked (x ?x) (y ?y))
@@ -182,32 +205,56 @@
 ;;; NOBOMB & BOMB
 ;;; #######################
 
-;;; Numbered tile should not have any bomb
+;;; Click non 0-valued tile after free nobomb discovery because it should not have any bomb
+;;; Pre-conditions:
+;;; - Tile has been opened
+;;; - Tile is a non 0-valued tile
+;;; - Tile is opened by a 0-valued tile (open-condition = 1)
+;;;
+;;; Actions:
+;;; - Click the tile and set open-condition = 0 to indicate the tile is a non 0-valued tile
+;;;   It's should not be opened
+;;; - Set as nobomb tile
 (defrule nobomb-1
     (declare (salience 10))
     (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
-    (open-condition (x ?x) (y ?y) (cond ?a&:(= 1 ?a)))
+    (open-condition (x ?x) (y ?y) (cond 1))
     (opened (x ?x) (y ?y))
     =>
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y)))
     (assert (open-condition (x ?x) (y ?y) (cond 0))))
 
-;;; No bomb tile and no numbered tile should discover other tiles
+;;; Click 0-valued tile after free nobomb discovery to let it discover other tiles
+;;; Pre-conditions:
+;;; - Tile has been opened
+;;; - Tile is opened by a 0-valued tile (open-condition = 1)
+;;;
+;;; Actions:
+;;; - Click the tile and set open-condition = 0 to indicate tile is opened by a non 0-valued tile
+;;; - Set as nobomb tile
 (defrule nobomb-2
     (declare (salience 15))
-    (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
+    (tile (x ?x) (y ?y) (value 0))
     (not (flagged (x ?x) (y ?y)))
-    (not (open-condition (x ?x) (y ?y) (cond 0)))
+    (open-condition (x ?x) (y ?y) (cond 1))
     (opened (x ?x) (y ?y))
     =>
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y))))
 
+;;; Click 0-valued tile after bomb discovery which is guarenteed of having no bomb
+;;; Pre-conditions:
+;;; - Tile has been opened, resulted from bomb discovery
+;;; - Tile is a 0-valued tile
+;;;
+;;; Actions:
+;;; - Click the tile and set open-condition = 1 to let the tile discover its neighbours
+;;; - Set as nobomb tile
 (defrule nobomb-3
     (declare (salience 6))
-    (tile (x ?x) (y ?y) (value ?value&:(= ?value 0)))
-    (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
+    (tile (x ?x) (y ?y) (value 0))
+    (open-condition (x ?x) (y ?y) (cond 0))
     (opened (x ?x) (y ?y))
     (opened-nobomb ?x ?y)
     =>
@@ -215,10 +262,18 @@
     (assert (clicked (x ?x) (y ?y)))
     (assert (open-condition (x ?x) (y ?y) (cond 1))))
 
+;;; Click non 0-valued tile after bomb discovery which is guarenteed of having no bomb
+;;; Pre-conditions:
+;;; - Tile has been opened, resulted from bomb discovery
+;;; - Tile is a non 0-valued tile
+;;;
+;;; Actions:
+;;; - Click the tile and set open-condition = 0 to not let the tile discover its neighbours
+;;; - Set as nobomb tile
 (defrule nobomb-4
     (declare (salience 6))
     (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
-    (open-condition (x ?x) (y ?y) (cond ?a&:(= 0 ?a)))
+    (open-condition (x ?x) (y ?y) (cond 0))
     (opened (x ?x) (y ?y))
     (opened-nobomb ?x ?y)
     =>
@@ -226,7 +281,13 @@
     (assert (clicked (x ?x) (y ?y)))
     (assert (open-condition (x ?x) (y ?y) (cond 0))))
 
-;;; 
+;;; Open all tiles that are free of bomb
+;;; it's inferenced after bomb discover
+;;; which made other bomb neighbours' count into 0
+;;;
+;;; Just avoid clicked tile (incase of bomb)
+;;; and also we indicate the tiles are opened after bomb discovery
+;;; with opened-bomb fact
 (deffunction discover-free (?x ?y ?s)
     (or
         (if (inRange ?x (+ ?y 1) ?s)
@@ -329,6 +390,13 @@
 )
 
 ;;; Open nobomb tile for discovery
+;;; Pre-conditions:
+;;; - Bomb neighbours' count of the tile is 0
+;;;   means it's safe to open all neighbour tiles (except bomb)
+;;; - Tile has been clicked
+;;;
+;;; Actions:
+;;; - Do discovery-free (explained above)
 (defrule open-nobomb
     (declare (salience 10))
     (tile (x ?x) (y ?y) (value ?))
@@ -340,6 +408,7 @@
 
 
 ;;; Flag all closed neighbour tiles as bombs
+;;; We also assume flagging as clicking too
 (deffunction flaggedBombs (?x ?y ?s)
     (or
         (if (inRange ?x (+ ?y 1) ?s)
@@ -459,6 +528,12 @@
 
 ;;; If closed neighbours' count == bombs' count in a certain tile
 ;;; Flagged all closed neighbour tiles as bombs
+;;; Pre-conditions:
+;;; - Bomb neighbours' count and closed neighbours' count is not 0 and equal
+;;; - Tile has been opened
+;;;
+;;; Actions:
+;;; - Flagged all closed neighbour tiles as bombs
 (defrule bomb-1
     (declare (salience 5))
     (bombNeighbours (x ?x) (y ?y) (count ?bn&:(!= ?bn 0)))
