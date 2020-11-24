@@ -7,17 +7,17 @@ class MinesweeperAgent():
         self.env = Environment()
         for clp in clps:
             self.env.load(clp)
-        self.board = None
-        self.board_mask = None
-        self.max_fact_id = "0"
-        self.predicted_bombs = []
 
     def init_agent(self, size, bcounts, coords):
+        self.board = None
+        self.board_mask = None
+        self.predicted_bombs = []
         self.size = size
         self.bombs_count = bcounts
         self.coords = coords
         self.opened = 0
         self.max_steps_to_goal = None
+        self.max_fact_id = 0
 
         self.env.reset()
         self.env.assert_string(f"(board-size {size})")
