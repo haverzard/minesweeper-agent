@@ -543,5 +543,6 @@
     (board-size ?s)
     =>
     (flagged-bombs ?x ?y ?s)
-    (assert (n-iteration (+ ?*iteration* 1)))
-    (bind ?*iteration* (+ ?*iteration* 1)))
+;    (assert (n-iteration (+ ?*iteration* 1)))
+;    (bind ?*iteration* (+ ?*iteration* 1))
+)
