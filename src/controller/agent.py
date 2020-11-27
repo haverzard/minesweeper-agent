@@ -1,6 +1,7 @@
 from clips import Environment
 import numpy as np
 import re
+import time
 
 class MinesweeperAgent():
     def __init__(self, clps=[]):
@@ -40,10 +41,14 @@ class MinesweeperAgent():
             for col in range(size):
                 self.env.assert_string(f"(tile (x {col}) (y {size-row-1}) (value {self.board[row][col]}))")
 
-    def run_and_evaluate(self):
+    def run_and_evaluate(self, signals=None, delay=0):
+        # unpack signals
+        cell_status_signal = signals.cell_status if (signals is not None) else None
+        # print initial facts
         for fact in self.env.facts():
             self.max_fact_id = fact.index
             print(fact)
+        # run
         for i in range(1600):
             self.env.run(1)
             if self.max_steps_to_goal is None and self.opened == self.size**2:
@@ -70,9 +75,16 @@ class MinesweeperAgent():
 
             # Pass data to gui here
             for row in range(self.size-1, -1, -1):
+                normalized_row = self.size-row-1
                 for col in range(self.size):
-                    if self.board_mask[self.size-row-1, col] != 9:
+                    if self.board_mask[normalized_row, col] != 9:
                         print("■ ", end="")
+                        if cell_status_signal:
+                            cell_status_signal.emit(normalized_row, col, -1)
                     else:
-                        print(self.board[self.size-row-1, col], end=" ")
+                        print(self.board[normalized_row, col], end=" ")
+                        if cell_status_signal:
+                            cell_status_signal.emit(normalized_row, col, self.board[normalized_row, col])
                 print()
+
+            time.sleep(delay)

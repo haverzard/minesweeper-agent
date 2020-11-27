@@ -15,6 +15,10 @@ class PageIdx(IntEnum):
     MAIN_MENU = 0
     IN_GAME = 1
 
+class GameSignals(QObject):
+    # cell status (row, col, value)
+    cell_status = pyqtSignal(int, int, int)
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -22,18 +26,24 @@ class MainWindow(QMainWindow):
         # change page helper
         self.changePage = lambda idx: self.stackedWidget.setCurrentIndex(idx)
         # game agent
+        self.ms = None
         self.initAgent()
         # setup ui
         self.setupUI()
         self.initBoardUI()
         # multithreader
         self.threadPool = QThreadPool()
+        self.worker = None
+        # signals
+        self.gameSignals = GameSignals()
 
+    # UI methods
     def setupUI(self):
         # main menu page
         self.playGameBtn.clicked.connect(lambda: self.changePage(PageIdx.IN_GAME))
         self.exitBtn.clicked.connect(lambda: self.close())
         # in game page
+        self.startGameBtn.clicked.connect(self.startGameBtnClickedHandler)
         self.quitGameBtn.clicked.connect(lambda: self.changePage(PageIdx.MAIN_MENU))
 
     def initBoardUI(self):
@@ -44,6 +54,11 @@ class MainWindow(QMainWindow):
                 # button.setStyleSheet(self.getCellStyleSheet(cell.owner))
                 self.field.addWidget(button, row, col)
 
+    def updateCellUI(self, row, col, value):
+        button = self.field.itemAtPosition(row, col).widget()
+        button.setText("■" if value == -1 else str(value))
+
+    # Game methods
     def initAgent(self):
         size, bcounts, coords = process_input("../tests/tc1.txt")
         self.ms = MinesweeperAgent(["model/template_facts.clp", "model/rules.clp", "model/minesweeper.clp"])
@@ -51,6 +66,31 @@ class MainWindow(QMainWindow):
         # self.ms.run_and_evaluate()
         # print("Reached goal at Iteration {}".format(self.ms.max_steps_to_goal))
         # print("Finished cycle at Iteration {}".format(self.ms.max_steps_to_finish))
+
+    # Handler methods
+    def startGameBtnClickedHandler(self):
+        if self.ms is None:
+            print("Minesweeper Agent is not initialized")
+            return
+        # connect game signals
+        self.gameSignals.cell_status.connect(self.updateCellUI)
+        # create worker
+        self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=0.1)
+        # connect signals
+        self.worker.signals.exception.connect(self.gameThreadException)
+        self.worker.signals.result.connect(self.gameThreadResult)
+        self.worker.signals.done.connect(self.gameThreadDone)
+        # Run thread
+        self.threadPool.start(self.worker)
+
+    def gameThreadException(self, exception):
+        print(exception)
+
+    def gameThreadResult(self, res):
+        print(f"Function result: {res}")
+
+    def gameThreadDone(self):
+        print("Game thread done")
 
     # Helper methods
     def spawnDialogWindow(self, title, text, yesBtnLbl="Yes", noBtnLbl="No",
