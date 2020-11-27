@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         button = self.field.itemAtPosition(row, col).widget()
         if button.property("status") == "flagged": return
         if value == -1:
-            button.setText("■")
+            return
         else:
             button.setText(str(value))
             button.setProperty("status", "opened")
