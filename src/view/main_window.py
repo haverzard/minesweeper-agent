@@ -5,6 +5,8 @@ from PyQt5.uic import loadUi
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+# from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+from PyQt5.QtGui import QIcon
 
 from .worker import Worker
 from model import *
@@ -27,15 +29,29 @@ class MainWindow(QMainWindow):
         self.changePage = lambda idx: self.stackedWidget.setCurrentIndex(idx)
         # game agent
         self.ms = None
-        self.initAgent()
+        # self.initAgent()
         # setup ui
         self.setupUI()
-        self.initBoardUI()
+        # self.initBoardUI()
         # multithreader
         self.threadPool = QThreadPool()
         self.worker = None
         # signals
         self.gameSignals = GameSignals()
+        # fields
+        self.delay = 0.1
+
+    def changeDelay(self):
+        self.delay = float(self.delayTextEdit.toPlainText())
+
+    def openFileNameDialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
+        if fileName:
+            self.initAgent(fileName)
+            self.initBoardUI()
+            # print(fileName)
 
     # UI methods
     def setupUI(self):
@@ -45,6 +61,8 @@ class MainWindow(QMainWindow):
         # in game page
         self.startGameBtn.clicked.connect(self.startGameBtnClickedHandler)
         self.quitGameBtn.clicked.connect(lambda: self.changePage(PageIdx.MAIN_MENU))
+        self.delayPlayBtn.clicked.connect(self.changeDelay)
+        self.loadTCBtn.clicked.connect(self.openFileNameDialog)
 
     def initBoardUI(self):
         for row in range(self.ms.size):
@@ -59,8 +77,8 @@ class MainWindow(QMainWindow):
         button.setText("■" if value == -1 else str(value))
 
     # Game methods
-    def initAgent(self):
-        size, bcounts, coords = process_input("../tests/tc1.txt")
+    def initAgent(self, filepath="../tests/tc1.txt"):
+        size, bcounts, coords = process_input(filepath)
         self.ms = MinesweeperAgent(["model/template_facts.clp", "model/rules.clp", "model/minesweeper.clp"])
         self.ms.init_agent(size, bcounts, coords)
         # self.ms.run_and_evaluate()
@@ -75,7 +93,7 @@ class MainWindow(QMainWindow):
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
         # create worker
-        self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=0.1)
+        self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=self.delay)
         # connect signals
         self.worker.signals.exception.connect(self.gameThreadException)
         self.worker.signals.result.connect(self.gameThreadResult)
