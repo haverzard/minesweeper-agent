@@ -18,6 +18,8 @@ class PageIdx(IntEnum):
 class GameSignals(QObject):
     # cell status (row, col, value)
     cell_status = pyqtSignal(int, int, int)
+    # flag cell (row, col)
+    flag_cell = pyqtSignal(int, int)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -50,22 +52,32 @@ class MainWindow(QMainWindow):
         for row in range(self.ms.size):
             for col in range(self.ms.size):
                 button = QPushButton()
+                button.setProperty("status", "unknown")
                 button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-                # button.setStyleSheet(self.getCellStyleSheet(cell.owner))
+                button.setStyleSheet(self.getCellStyleSheet())
                 self.field.addWidget(button, row, col)
 
     def updateCellUI(self, row, col, value):
         button = self.field.itemAtPosition(row, col).widget()
-        button.setText("■" if value == -1 else str(value))
+        if button.property("status") == "flagged": return
+        if value == -1:
+            button.setText("■")
+        else:
+            button.setText(str(value))
+            button.setProperty("status", "opened")
+            button.setStyle(button.style());
+
+    def updateFlaggedCellUI(self, row, col):
+        button = self.field.itemAtPosition(row, col).widget()
+        button.setText("▶")
+        button.setProperty("status", "flagged")
+        button.setStyle(button.style());
 
     # Game methods
     def initAgent(self):
         size, bcounts, coords = process_input("../tests/tc1.txt")
         self.ms = MinesweeperAgent(["model/template_facts.clp", "model/rules.clp", "model/minesweeper.clp"])
         self.ms.init_agent(size, bcounts, coords)
-        # self.ms.run_and_evaluate()
-        # print("Reached goal at Iteration {}".format(self.ms.max_steps_to_goal))
-        # print("Finished cycle at Iteration {}".format(self.ms.max_steps_to_finish))
 
     # Handler methods
     def startGameBtnClickedHandler(self):
@@ -74,8 +86,9 @@ class MainWindow(QMainWindow):
             return
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
+        self.gameSignals.flag_cell.connect(self.updateFlaggedCellUI)
         # create worker
-        self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=0.1)
+        self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=0.02)
         # connect signals
         self.worker.signals.exception.connect(self.gameThreadException)
         self.worker.signals.result.connect(self.gameThreadResult)
@@ -91,6 +104,9 @@ class MainWindow(QMainWindow):
 
     def gameThreadDone(self):
         print("Game thread done")
+        print("Reached goal at Iteration {}".format(self.ms.max_steps_to_goal))
+        print("Finished cycle at Iteration {}".format(self.ms.max_steps_to_finish))
+        print(self.ms.predicted_bombs)
 
     # Helper methods
     def spawnDialogWindow(self, title, text, yesBtnLbl="Yes", noBtnLbl="No",
@@ -111,3 +127,14 @@ class MainWindow(QMainWindow):
         message.addButton(noBtnLbl, QMessageBox.NoRole)
         if callback: message.buttonClicked.connect(callback)
         message.exec_()
+
+    def getCellStyleSheet(self):
+        stylesheet = """QPushButton {
+                            background-color: #ffffff;
+                            border-radius: 1 solid black;
+                        }
+                        QPushButton[status='unknown'] { background-color: #ffffff; }
+                        QPushButton[status='opened'] { background-color: #a0a0a0; }
+                        QPushButton[status='flagged'] { background-color: pink; }
+                     """
+        return stylesheet

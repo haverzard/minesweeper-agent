@@ -44,6 +44,7 @@ class MinesweeperAgent():
     def run_and_evaluate(self, signals=None, delay=0):
         # unpack signals
         cell_status_signal = signals.cell_status if (signals is not None) else None
+        flag_cell_signal = signals.flag_cell if (signals is not None) else None
         # print initial facts
         for fact in self.env.facts():
             self.max_fact_id = fact.index
@@ -71,6 +72,10 @@ class MinesweeperAgent():
                         self.opened += 1
                     if "flagged " in str_fact:
                         self.predicted_bombs.append(fact)
+                        # update ui
+                        x, y = map(int, re.findall(r"\(flagged \(x (\d+)\) \(y (\d+)\)\)", str_fact)[0])
+                        if flag_cell_signal:
+                            flag_cell_signal.emit(self.size-y-1, x)
                     print(fact)
 
             # Pass data to gui here
