@@ -14,8 +14,8 @@
    (slot y)
    (slot count))
 
-;;; Bomb neighbours' count of a tile (Init from value)
-(deftemplate bomb-neighbours
+;;; Unidentified bomb neighbours' count of a tile (Init from value)
+(deftemplate unidentified-bomb-neighbours
    (slot x)
    (slot y)
    (slot count))

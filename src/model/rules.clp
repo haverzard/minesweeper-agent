@@ -27,7 +27,7 @@
     (tile (x ?x) (y ?y) (value ?v))
     (board-size ?s)
     =>
-    (assert (bomb-neighbours (x ?x) (y ?y) (count ?v)))
+    (assert (unidentified-bomb-neighbours (x ?x) (y ?y) (count ?v)))
 )
 
 ;;; Decrease the bombs' count for all neighbours of the flagged tile
@@ -42,35 +42,35 @@
     (board-size ?s)
     =>
     (and (in-range ?x (- ?y 1) ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
             (modify ?ff (count (- ?ff:count 1))))
     )
     (and (in-range ?x (+ ?y 1) ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
             (modify ?ff (count (- ?ff:count 1))))
     )
     (and (in-range (- ?x 1) ?y ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
             (modify ?ff (count (- ?ff:count 1))))
     )
     (and (in-range (+ ?x 1) ?y ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
             (modify ?ff (count (- ?ff:count 1))))
     )
     (and (in-range (+ ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
             (modify ?ff (count (- ?ff:count 1))))
     )
     (and (in-range (+ ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
             (modify ?ff (count (- ?ff:count 1))))
     )
     (and (in-range (- ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
             (modify ?ff (count (- ?ff:count 1))))
     )
     (and (in-range (- ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
+        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
             (modify ?ff (count (- ?ff:count 1))))
     )
 )
@@ -391,7 +391,7 @@
 
 ;;; Open nobomb tile for discovery
 ;;; Pre-conditions:
-;;; - Bomb neighbours' count of the tile is 0
+;;; - Unidentified bomb neighbours' count of the tile is 0
 ;;;   means it's safe to open all neighbour tiles (except bomb)
 ;;; - Tile has been clicked
 ;;;
@@ -400,7 +400,7 @@
 (defrule open-nobomb
     (declare (salience 10))
     (tile (x ?x) (y ?y) (value ?))
-    (bomb-neighbours (x ?x) (y ?y) (count 0))
+    (unidentified-bomb-neighbours (x ?x) (y ?y) (count 0))
     (clicked (x ?x) (y ?y))
     (board-size ?s)
     =>
@@ -529,14 +529,14 @@
 ;;; If closed neighbours' count == bombs' count in a certain tile
 ;;; Flagged all closed neighbour tiles as bombs
 ;;; Pre-conditions:
-;;; - Bomb neighbours' count and closed neighbours' count is not 0 and equal
+;;; - Unidentified bomb neighbours' count and closed neighbours' count is not 0 and equal
 ;;; - Tile has been opened
 ;;;
 ;;; Actions:
 ;;; - Flagged all closed neighbour tiles as bombs
 (defrule bomb-1
     (declare (salience 5))
-    (bomb-neighbours (x ?x) (y ?y) (count ?bn&:(!= ?bn 0)))
+    (unidentified-bomb-neighbours (x ?x) (y ?y) (count ?bn&:(!= ?bn 0)))
     (closed-neighbours (x ?x) (y ?y) (count ?cn))
     (test (= ?cn ?bn))
     (opened (x ?x) (y ?y))
