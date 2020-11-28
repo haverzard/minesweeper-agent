@@ -289,101 +289,99 @@
 ;;; and also we indicate the tiles are opened after bomb discovery
 ;;; with opened-bomb fact
 (deffunction discover-free (?x ?y ?s)
-    (or
-        (if (in-range ?x (+ ?y 1) ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    (if (in-range ?x (+ ?y 1) ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
-        (if (in-range ?x (- ?y 1) ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    )
+    (if (in-range ?x (- ?y 1) ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
-        (if (in-range (- ?x 1) ?y ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    )
+    (if (in-range (- ?x 1) ?y ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
-        (if (in-range (+ ?x 1) ?y ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    )
+    (if (in-range (+ ?x 1) ?y ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
-        (if (in-range (- ?x 1) (- ?y 1) ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    )
+    (if (in-range (- ?x 1) (- ?y 1) ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
-        (if (in-range (- ?x 1) (+ ?y 1) ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    )
+    (if (in-range (- ?x 1) (+ ?y 1) ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
-        (if (in-range (+ ?x 1) (- ?y 1) ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    )
+    (if (in-range (+ ?x 1) (- ?y 1) ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
-        (if (in-range (+ ?x 1) (+ ?y 1) ?s)
-            then
-            (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (assert (opened (x ?ff:x) (y ?ff:y)))
-                    (modify ?ff (cond 0))
-                    (assert (opened-nobomb ?ff:x ?ff:y))
-                )
+    )
+    (if (in-range (+ ?x 1) (+ ?y 1) ?s)
+        then
+        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (assert (opened (x ?ff:x) (y ?ff:y)))
+                (modify ?ff (cond 0))
+                (assert (opened-nobomb ?ff:x ?ff:y))
             )
         )
     )
