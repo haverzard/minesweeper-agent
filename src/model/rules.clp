@@ -527,7 +527,7 @@
 ;;; Flagged all closed neighbour tiles as bombs
 ;;; Pre-conditions:
 ;;; - Unidentified bomb neighbours' count and closed neighbours' count is not 0 and equal
-;;; - Tile has been opened
+;;; - Tile has been clicked
 ;;;
 ;;; Actions:
 ;;; - Flagged all closed neighbour tiles as bombs
@@ -536,7 +536,7 @@
     (unidentified-bomb-neighbours (x ?x) (y ?y) (count ?bn&:(!= ?bn 0)))
     (closed-neighbours (x ?x) (y ?y) (count ?cn))
     (test (= ?cn ?bn))
-    (opened (x ?x) (y ?y))
+    (clicked (x ?x) (y ?y))
     (board-size ?s)
     =>
     (flagged-bombs ?x ?y ?s)
