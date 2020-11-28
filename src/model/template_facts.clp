@@ -8,7 +8,7 @@
    (slot y)
    (slot value))
 
-;;; Closed neighbours' count of a tile (Init by rotating)
+;;; Closed (not clicked) neighbours' count of a tile (Init by rotating)
 (deftemplate closed-neighbours
    (slot x)
    (slot y)
@@ -20,17 +20,18 @@
    (slot y)
    (slot count))
 
-;;; Clicked tile by agent
+;;; Clicked tile by agent (Visible for viewing tile's value)
 (deftemplate clicked
    (slot x)
    (slot y))
 
-;;; Opened tile (Visible tile or can-be-clicked tile)
+;;; Opened tile (Visible or can-be-clicked tile for agent)
 (deftemplate opened
    (slot x)
    (slot y))
 
 ;;; Condition for a tile to open its neighbours
+;;; or condition how a tile is opened
 (deftemplate open-condition
    (slot x)
    (slot y)
