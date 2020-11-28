@@ -51,15 +51,15 @@ class MinesweeperAgent():
             print(fact)
         # run
         for i in range(1600):
+            for act in self.env.activations():
+                print(act)
+                break
+
             self.env.run(1)
             if self.max_steps_to_goal is None and self.opened == self.size**2:
                 self.max_steps_to_goal = i
             if not self.env.agenda_changed:
                 self.max_steps_to_finish = i
-                break
-
-            for act in self.env.activations():
-                print(act)
                 break
 
             for fact in self.env.facts():
