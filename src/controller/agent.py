@@ -66,8 +66,8 @@ class MinesweeperAgent():
                 if fact.index > self.max_fact_id:
                     self.max_fact_id = fact.index
                     str_fact = str(fact)
-                    if "opened " in str_fact:
-                        x, y = map(int, re.findall(r"\(opened \(x (\d+)\) \(y (\d+)\)\)", str_fact)[0])
+                    if "clicked " in str_fact:
+                        x, y = map(int, re.findall(r"\(clicked \(x (\d+)\) \(y (\d+)\)\)", str_fact)[0])
                         self.board_mask[self.size-y-1, x] = 9
                         self.opened += 1
                     if "flagged " in str_fact:
