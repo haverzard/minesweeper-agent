@@ -51,8 +51,9 @@ class MinesweeperAgent():
             print(fact)
         # run
         for i in range(1600):
+            selected_rule = None
             for act in self.env.activations():
-                print(act)
+                selected_rule = str(act)
                 break
 
             self.env.run(1)
@@ -62,8 +63,25 @@ class MinesweeperAgent():
                 self.max_steps_to_finish = i
                 break
 
+            print("Selected Rule    : " + re.findall(r" ([^: ]+):", selected_rule)[0])
+            print("Matched Facts    :")
+            matched_facts = re.findall(r": ([^: ]+)", selected_rule)
+            matched_facts_idx = set()
+            if matched_facts:
+                for fact in matched_facts[0].split(","):
+                    idx = re.findall(r"f\-(\d+)", fact)
+                    if idx:
+                        matched_facts_idx.add(int(idx[0]))
+
+            first_hit = True
             for fact in self.env.facts():
-                if fact.index > self.max_fact_id:
+                if fact.index <= self.max_fact_id:
+                    if fact.index in matched_facts_idx:
+                        print(str(fact))
+                else:
+                    if first_hit:
+                        print("Asserted Facts   :")
+                        first_hit = False
                     self.max_fact_id = fact.index
                     str_fact = str(fact)
                     if "clicked " in str_fact:
