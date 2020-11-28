@@ -408,116 +408,114 @@
 ;;; Flag all closed neighbour tiles as bombs
 ;;; We also assume flagging as clicking too
 (deffunction flagged-bombs (?x ?y ?s)
-    (or
-        (if (in-range ?x (+ ?y 1) ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    (if (in-range ?x (+ ?y 1) ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
-        (if (in-range ?x (- ?y 1) ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    )
+    (if (in-range ?x (- ?y 1) ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
-        (if (in-range (- ?x 1) ?y ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    )
+    (if (in-range (- ?x 1) ?y ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
-        (if (in-range (+ ?x 1) ?y ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    )
+    (if (in-range (+ ?x 1) ?y ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
-        (if (in-range (- ?x 1) (- ?y 1) ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    )
+    (if (in-range (- ?x 1) (- ?y 1) ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
-        (if (in-range (- ?x 1) (+ ?y 1) ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    )
+    (if (in-range (- ?x 1) (+ ?y 1) ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
-        (if (in-range (+ ?x 1) (- ?y 1) ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    )
+    (if (in-range (+ ?x 1) (- ?y 1) ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
-        (if (in-range (+ ?x 1) (+ ?y 1) ?s)
-            then
-            (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
-                (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                    then
-                    else
-                    (and
-                        (assert (flagged (x ?ff:x) (y ?ff:y)))
-                        (assert (clicked (x ?ff:x) (y ?ff:y)))
-                        (assert (bomb ?ff:x ?ff:y))
-                    )
+    )
+    (if (in-range (+ ?x 1) (+ ?y 1) ?s)
+        then
+        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
+            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
+                then
+                else
+                (and
+                    (assert (flagged (x ?ff:x) (y ?ff:y)))
+                    (assert (clicked (x ?ff:x) (y ?ff:y)))
+                    (assert (bomb ?ff:x ?ff:y))
                 )
             )
         )
