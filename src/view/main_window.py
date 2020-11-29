@@ -22,6 +22,7 @@ class GameSignals(QObject):
     cell_status = pyqtSignal(int, int, int)
     # flag cell (row, col)
     flag_cell = pyqtSignal(int, int)
+    history = pyqtSignal(str, str)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -91,6 +92,16 @@ class MainWindow(QMainWindow):
         button.setProperty("status", "flagged")
         button.setStyle(button.style());
 
+    def updateHistory(self, selected_text, matched_text):
+        self.historyField.clear()
+        self.historyField.setReadOnly(True)
+        self.historyField.setLineWrapMode(QTextEdit.NoWrap)
+        self.historyField.moveCursor(QTextCursor.End)
+        self.historyField.insertPlainText(selected_text)
+        self.historyField.moveCursor(QTextCursor.End)
+        self.historyField.insertPlainText(matched_text)
+
+
     # Game methods
     def initAgent(self, filepath="../tests/tc1.txt"):
         size, bcounts, coords = process_input(filepath)
@@ -105,6 +116,7 @@ class MainWindow(QMainWindow):
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
         self.gameSignals.flag_cell.connect(self.updateFlaggedCellUI)
+        self.gameSignals.history.connect(self.updateHistory)
         # create worker
         self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=self.delay)
         # connect signals

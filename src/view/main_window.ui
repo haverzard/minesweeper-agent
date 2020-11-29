@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1119</width>
-    <height>809</height>
+    <width>1108</width>
+    <height>681</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,11 +23,11 @@
       <x>-10</x>
       <y>-10</y>
       <width>1121</width>
-      <height>811</height>
+      <height>691</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">background-color: rgb(220, 244, 255);</string>
     </property>
     <property name="currentIndex">
      <number>1</number>
@@ -256,7 +256,7 @@ border: 2px solid #000;
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>120</y>
+        <y>100</y>
         <width>581</width>
         <height>551</height>
        </rect>
@@ -266,19 +266,26 @@ border: 2px solid #000;
      <widget class="QLabel" name="gameTitle">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>260</x>
         <y>40</y>
-        <width>201</width>
+        <width>341</width>
         <height>51</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>13</pointsize>
+        <family>Montserrat ExtraBold</family>
+        <pointsize>20</pointsize>
+        <weight>10</weight>
+        <italic>false</italic>
+        <bold>false</bold>
        </font>
       </property>
+      <property name="styleSheet">
+       <string notr="true">font: 81 20pt &quot;Montserrat ExtraBold&quot;;</string>
+      </property>
       <property name="text">
-       <string>Minesweeper</string>
+       <string>Minesweeper Agent</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -287,11 +294,16 @@ border: 2px solid #000;
      <widget class="QPushButton" name="quitGameBtn">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>170</y>
-        <width>111</width>
-        <height>31</height>
+        <x>900</x>
+        <y>250</y>
+        <width>131</width>
+        <height>41</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(47, 125, 173);
+color: rgb(255, 255, 255);
+font: 87 10pt &quot;Montserrat Bold&quot;;</string>
       </property>
       <property name="text">
        <string>Quit Game</string>
@@ -301,92 +313,86 @@ border: 2px solid #000;
       <property name="geometry">
        <rect>
         <x>740</x>
-        <y>170</y>
-        <width>111</width>
-        <height>31</height>
+        <y>250</y>
+        <width>141</width>
+        <height>41</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(47, 125, 173);
+color: rgb(255, 255, 255);
+font: 87 10pt &quot;Montserrat Bold&quot;;</string>
       </property>
       <property name="text">
        <string>Start Game</string>
       </property>
      </widget>
-     <widget class="QTextBrowser" name="tcPathField">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>690</y>
-        <width>421</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QPushButton" name="loadTCBtn">
       <property name="geometry">
        <rect>
-        <x>570</x>
-        <y>690</y>
-        <width>141</width>
-        <height>31</height>
+        <x>740</x>
+        <y>140</y>
+        <width>291</width>
+        <height>41</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(47, 125, 173);
+color: rgb(255, 255, 255);
+font: 87 10pt &quot;Montserrat Bold&quot;;</string>
       </property>
       <property name="text">
        <string>Load TC</string>
       </property>
      </widget>
-     <widget class="QTextBrowser" name="historyField">
+     <widget class="QTextEdit" name="historyField">
       <property name="geometry">
        <rect>
         <x>740</x>
-        <y>250</y>
-        <width>251</width>
-        <height>421</height>
+        <y>310</y>
+        <width>291</width>
+        <height>281</height>
        </rect>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+font: 57 10pt &quot;Montserrat Medium&quot;;
+padding-left: 15px;
+border-radius: 5px;
+border-width: 2px;
+border-color: rgb(0, 0, 127);</string>
       </property>
      </widget>
      <widget class="QPlainTextEdit" name="delayTextEdit">
       <property name="geometry">
        <rect>
         <x>740</x>
-        <y>130</y>
-        <width>111</width>
-        <height>31</height>
+        <y>200</y>
+        <width>141</width>
+        <height>41</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QPushButton" name="nextMoveBtn">
-      <property name="geometry">
-       <rect>
-        <x>740</x>
-        <y>210</y>
-        <width>112</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Next Move</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="StreamToggleBtn">
-      <property name="geometry">
-       <rect>
-        <x>880</x>
-        <y>210</y>
-        <width>112</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Stream</string>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);
+font: 57 14pt &quot;Montserrat Medium&quot;;</string>
       </property>
      </widget>
      <widget class="QPushButton" name="delayPlayBtn">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>130</y>
-        <width>111</width>
-        <height>31</height>
+        <x>900</x>
+        <y>200</y>
+        <width>131</width>
+        <height>41</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(47, 125, 173);
+color: rgb(255, 255, 255);
+font: 87 10pt &quot;Montserrat Bold&quot;;</string>
       </property>
       <property name="text">
        <string>Set Delay</string>

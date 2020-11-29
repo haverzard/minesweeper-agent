@@ -45,6 +45,7 @@ class MinesweeperAgent():
         # unpack signals
         cell_status_signal = signals.cell_status if (signals is not None) else None
         flag_cell_signal = signals.flag_cell if (signals is not None) else None
+        history_signal = signals.history if (signals is not None) else None
         # print initial facts
         for fact in self.env.facts():
             self.max_fact_id = fact.index
@@ -63,8 +64,10 @@ class MinesweeperAgent():
                 self.max_steps_to_finish = i
                 break
 
-            print("Selected Rule    : " + re.findall(r" ([^: ]+):", selected_rule)[0])
-            print("Matched Facts    :")
+            selected_text = "\nSelected Rule    : " + re.findall(r" ([^: ]+):", selected_rule)[0] + "\n\n"
+            print(selected_text)
+            matched_text = "Matched Facts    :\n"
+            print(matched_text)
             matched_facts = re.findall(r": ([^: ]+)", selected_rule)
             matched_facts_idx = set()
             if matched_facts:
@@ -78,6 +81,8 @@ class MinesweeperAgent():
                 if fact.index <= self.max_fact_id:
                     if fact.index in matched_facts_idx:
                         print(str(fact))
+                        matched_text = matched_text + str(fact) + "\n"
+
                 else:
                     if first_hit:
                         print("Asserted Facts   :")
@@ -95,6 +100,9 @@ class MinesweeperAgent():
                         if flag_cell_signal:
                             flag_cell_signal.emit(self.size-y-1, x)
                     print(fact)
+
+                if history_signal:
+                    history_signal.emit(selected_text, matched_text)
 
             # Pass data to gui here
             for row in range(self.size-1, -1, -1):
