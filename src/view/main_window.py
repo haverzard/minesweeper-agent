@@ -45,7 +45,18 @@ class MainWindow(QMainWindow):
         self.delay = 0.1
 
     def changeDelay(self):
-        self.delay = float(self.delayTextEdit.toPlainText())
+        try:
+            self.delay = float(self.delayTextEdit.toPlainText())
+        except Exception as e:
+            print("Failed to set delay with value: " + self.delayTextEdit.toPlainText())
+            self.spawnDialogWindow("Set Delay Failed",
+                                   "Failed to set delay with value: " + self.delayTextEdit.toPlainText(),
+                                   type="Warning", yesBtnLbl=None, noBtnLbl=None)
+        else:
+            print("Delay set to: " + str(self.delay) + " second(s)")
+            self.spawnDialogWindow("Set Delay Succeed",
+                                   "Delay set to: " + str(self.delay) + " second(s)",
+                                   yesBtnLbl=None, noBtnLbl=None)
 
     def openFileNameDialog(self):
         options = QFileDialog.Options()
@@ -118,7 +129,7 @@ class MainWindow(QMainWindow):
             print("Minesweeper Agent is not initialized")
             self.spawnDialogWindow("Minesweeper Agent is not initialized",
                                    "Please Load TC to initialize Minesweeper Agent",
-                                   yesBtnLbl=None, noBtnLbl=None)
+                                   type="Warning", yesBtnLbl=None, noBtnLbl=None)
             return
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
@@ -155,7 +166,7 @@ class MainWindow(QMainWindow):
         try:
             self.gameSignals.history.disconnect(self.updateHistory)
         except Exception as e:
-            pass 
+            pass
 
     # Helper methods
     def spawnDialogWindow(self, title, text, subtext="", type="Information",
