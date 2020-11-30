@@ -86,8 +86,8 @@
     (tile (x ?x) (y ?y) (value ?))
     (board-size ?s)
     =>
-    (assert 
-        (closed-neighbours (x ?x) (y ?y) (count 
+    (assert
+        (closed-neighbours (x ?x) (y ?y) (count
                 (+ (in-range-count ?x (- ?y 1) ?s)
                     (in-range-count ?x (+ ?y 1) ?s)
                     (in-range-count (- ?x 1) ?y ?s)
@@ -137,7 +137,7 @@
 ;;; - Inherits open-condition value to neighbours
 ;;;     -> open-condition of non 0-valued tile should be different
 ;;;        from 0-valued tile
-;;;     -> this is to stop the agent clicking neighbours 
+;;;     -> this is to stop the agent clicking neighbours
 ;;;        from non 0-valued tile because it can be a bomb
 ;;; - Open neighbours tile for discovery
 (defrule open-tile
@@ -152,10 +152,10 @@
         (bind ?j (nth$ 2 ?neighbours))
         (if (in-range ?i ?j ?s)
             then
-            (and 
+            (and
                 (assert (opened (x ?i) (y ?j)))
                 (assert (open-condition (x ?i) (y ?j) (cond ?z)))
-            )            
+            )
         )
         (bind ?neighbours (delete$ ?neighbours 1 2))
     )
@@ -178,12 +178,12 @@
 (defrule nobomb-1
     (declare (salience 10))
     (tile (x ?x) (y ?y) (value ?value&:(!= ?value 0)))
-    (open-condition (x ?x) (y ?y) (cond 1))
+    ?f1<-(open-condition (x ?x) (y ?y) (cond 1))
     (opened (x ?x) (y ?y))
     =>
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y)))
-    (assert (open-condition (x ?x) (y ?y) (cond 0))))
+    (modify ?f1 (cond 0)))
 
 ;;; Click 0-valued tile after free nobomb discovery to let it discover other tiles
 ;;; Pre-conditions:
@@ -214,13 +214,13 @@
 (defrule nobomb-3
     (declare (salience 6))
     (tile (x ?x) (y ?y) (value 0))
-    (open-condition (x ?x) (y ?y) (cond 0))
+    ?f1<-(open-condition (x ?x) (y ?y) (cond 0))
     (opened (x ?x) (y ?y))
     (opened-nobomb ?x ?y)
     =>
     (assert (nobomb ?x ?y))
     (assert (clicked (x ?x) (y ?y)))
-    (assert (open-condition (x ?x) (y ?y) (cond 1))))
+    (modify ?f1 (cond 1)))
 
 ;;; Click non 0-valued tile after bomb discovery which is guarenteed of having no bomb
 ;;; Pre-conditions:
@@ -238,8 +238,7 @@
     (opened-nobomb ?x ?y)
     =>
     (assert (nobomb ?x ?y))
-    (assert (clicked (x ?x) (y ?y)))
-    (assert (open-condition (x ?x) (y ?y) (cond 0))))
+    (assert (clicked (x ?x) (y ?y))))
 
 ;;; Open all tiles that are free of bomb
 ;;; it's inferenced after bomb discover
