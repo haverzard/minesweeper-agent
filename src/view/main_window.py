@@ -33,6 +33,8 @@ class MainWindow(QMainWindow):
         # game agent
         self.ms = None
         # self.initAgent()
+        # default delay
+        self.delay = 0.1
         # setup ui
         self.setupUI()
         # self.initBoardUI()
@@ -41,22 +43,26 @@ class MainWindow(QMainWindow):
         self.worker = None
         # signals
         self.gameSignals = GameSignals()
-        # fields
-        self.delay = 0.1
 
     def changeDelay(self):
         try:
-            self.delay = float(self.delayTextEdit.toPlainText())
+            delay = float(self.delayTextEdit.toPlainText())
+            if delay < 0:
+                raise Exception("Delay cannot be negative")
+            self.delay = delay
         except Exception as e:
             print("Failed to set delay with value: " + self.delayTextEdit.toPlainText())
             self.spawnDialogWindow("Set Delay Failed",
                                    "Failed to set delay with value: " + self.delayTextEdit.toPlainText(),
-                                   type="Warning", yesBtnLbl=None, noBtnLbl=None)
+                                   subtext=str(e), type="Warning", yesBtnLbl=None, noBtnLbl=None)
         else:
             print("Delay set to: " + str(self.delay) + " second(s)")
             self.spawnDialogWindow("Set Delay Succeed",
                                    "Delay set to: " + str(self.delay) + " second(s)",
                                    yesBtnLbl=None, noBtnLbl=None)
+        finally:
+            self.delayTextEdit.clear()
+            self.delayTextEdit.insertPlainText(str(self.delay))
 
     def openFileNameDialog(self):
         options = QFileDialog.Options()
@@ -80,6 +86,8 @@ class MainWindow(QMainWindow):
         # Setup field
         self.historyField.setReadOnly(True)
         self.historyField.setLineWrapMode(QTextEdit.NoWrap)
+        # Setup delay field
+        self.delayTextEdit.insertPlainText(str(self.delay))
 
     def initBoardUI(self):
         while self.field.count():
