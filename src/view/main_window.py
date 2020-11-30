@@ -123,7 +123,8 @@ class MainWindow(QMainWindow):
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
         self.gameSignals.flag_cell.connect(self.updateFlaggedCellUI)
-        self.gameSignals.history.connect(self.updateHistory)
+        if not self.consoleOnlyCBox.isChecked():
+            self.gameSignals.history.connect(self.updateHistory)
         # create worker
         self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=self.delay)
         # connect signals
@@ -151,7 +152,10 @@ class MainWindow(QMainWindow):
         # disconnect game signals
         self.gameSignals.cell_status.disconnect(self.updateCellUI)
         self.gameSignals.flag_cell.disconnect(self.updateFlaggedCellUI)
-        self.gameSignals.history.disconnect(self.updateHistory)
+        try:
+            self.gameSignals.history.disconnect(self.updateHistory)
+        except Exception as e:
+            pass 
 
     # Helper methods
     def spawnDialogWindow(self, title, text, subtext="", type="Information",

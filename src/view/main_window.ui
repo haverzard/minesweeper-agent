@@ -349,7 +349,7 @@ font: 87 10pt &quot;Montserrat Bold&quot;;</string>
       <property name="geometry">
        <rect>
         <x>740</x>
-        <y>310</y>
+        <y>330</y>
         <width>291</width>
         <height>281</height>
        </rect>
@@ -396,6 +396,19 @@ font: 87 10pt &quot;Montserrat Bold&quot;;</string>
       </property>
       <property name="text">
        <string>Set Delay</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="consoleOnlyCBox">
+      <property name="geometry">
+       <rect>
+        <x>740</x>
+        <y>300</y>
+        <width>291</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Output In Console Only (Better Performance)</string>
       </property>
      </widget>
     </widget>
