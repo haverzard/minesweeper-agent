@@ -116,6 +116,9 @@ class MainWindow(QMainWindow):
     def startGameBtnClickedHandler(self):
         if self.ms is None:
             print("Minesweeper Agent is not initialized")
+            self.spawnDialogWindow("Minesweeper Agent is not initialized",
+                                   "Please Load TC to initialize Minesweeper Agent",
+                                   yesBtnLbl=None, noBtnLbl=None)
             return
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
@@ -141,11 +144,18 @@ class MainWindow(QMainWindow):
         print("Reached goal at Iteration {}".format(self.ms.max_steps_to_goal))
         print("Finished cycle at Iteration {}".format(self.ms.max_steps_to_finish))
         print(self.ms.predicted_bombs)
-        del self.ms.predicted_bombs, self.ms.env, self.ms
+        del self.ms.predicted_bombs, self.ms.env
+        # clear minesweeper agent and worker
+        self.ms = None
+        self.worker = None
+        # disconnect game signals
+        self.gameSignals.cell_status.disconnect(self.updateCellUI)
+        self.gameSignals.flag_cell.disconnect(self.updateFlaggedCellUI)
+        self.gameSignals.history.disconnect(self.updateHistory)
 
     # Helper methods
-    def spawnDialogWindow(self, title, text, yesBtnLbl="Yes", noBtnLbl="No",
-                          subtext="", type="Information", callback=None):
+    def spawnDialogWindow(self, title, text, subtext="", type="Information",
+                          yesBtnLbl="Yes", noBtnLbl="No", callback=None):
         message = QMessageBox()
         if type == "Question":
             message.setIcon(QMessageBox.Question)
@@ -158,9 +168,13 @@ class MainWindow(QMainWindow):
         message.setWindowTitle(title)
         message.setText(text)
         message.setInformativeText(subtext)
-        message.addButton(yesBtnLbl, QMessageBox.YesRole)
-        message.addButton(noBtnLbl, QMessageBox.NoRole)
-        if callback: message.buttonClicked.connect(callback)
+        if yesBtnLbl and noBtnLbl:
+            message.addButton(yesBtnLbl, QMessageBox.YesRole)
+            message.addButton(noBtnLbl, QMessageBox.NoRole)
+            if callback:
+                message.buttonClicked.connect(callback)
+        else:
+            message.setStandardButtons(QMessageBox.Ok)
         message.exec_()
 
     def getCellStyleSheet(self):
