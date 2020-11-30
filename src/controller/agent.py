@@ -94,6 +94,8 @@ class MinesweeperAgent():
                         x, y = map(int, re.findall(r"\(clicked \(x (\d+)\) \(y (\d+)\)\)", str_fact)[0])
                         self.board_mask[self.size-y-1, x] = 9
                         self.opened += 1
+                        if cell_status_signal:
+                            cell_status_signal.emit(self.size-y-1, x, self.board[self.size-y-1, x])
                     if "flagged " in str_fact:
                         self.predicted_bombs.append(fact)
                         # update ui
@@ -109,18 +111,16 @@ class MinesweeperAgent():
                     history_signal.emit(selected_text, matched_text)
 
             # Pass data to gui here
-            for row in range(self.size-1, -1, -1):
-                normalized_row = self.size-row-1
-                for col in range(self.size):
-                    if self.board_mask[normalized_row, col] != 9:
-                        print("■ ", end="")
-                        if cell_status_signal:
-                            cell_status_signal.emit(normalized_row, col, -1)
-                    else:
-                        print(self.board[normalized_row, col], end=" ")
-                        if cell_status_signal:
-                            cell_status_signal.emit(normalized_row, col, self.board[normalized_row, col])
-                print()
+            if not cell_status_signal:
+                for row in range(self.size-1, -1, -1):
+                    normalized_row = self.size-row-1
+                    for col in range(self.size):
+                        if self.board_mask[normalized_row, col] != 9:
+                            print("■ ", end="")
+                        else:
+                            print(self.board[normalized_row, col], end=" ")
+                    print()
 
             time.sleep(delay)
             i += 1
+        del self.board, self.board_mask

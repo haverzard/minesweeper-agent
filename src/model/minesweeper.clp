@@ -35,7 +35,7 @@
     (not (bomb ?x ?y))
     =>
     (printout t "WRONG PREDICTION :(" crlf)
-    (exit)
+    (assert (failed ?x ?y))
 )
 
 ;;; Print function

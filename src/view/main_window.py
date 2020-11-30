@@ -66,6 +66,9 @@ class MainWindow(QMainWindow):
         self.quitGameBtn.clicked.connect(lambda: self.changePage(PageIdx.MAIN_MENU))
         self.delayPlayBtn.clicked.connect(self.changeDelay)
         self.loadTCBtn.clicked.connect(self.openFileNameDialog)
+        # Setup field
+        self.historyField.setReadOnly(True)
+        self.historyField.setLineWrapMode(QTextEdit.NoWrap)
 
     def initBoardUI(self):
         while self.field.count():
@@ -98,12 +101,9 @@ class MainWindow(QMainWindow):
 
     def updateHistory(self, selected_text, matched_text):
         self.historyField.clear()
-        self.historyField.setReadOnly(True)
-        self.historyField.setLineWrapMode(QTextEdit.NoWrap)
-        self.historyField.moveCursor(QTextCursor.End)
         self.historyField.insertPlainText(selected_text)
-        self.historyField.moveCursor(QTextCursor.End)
         self.historyField.insertPlainText(matched_text)
+        del matched_text, selected_text
 
 
     # Game methods
