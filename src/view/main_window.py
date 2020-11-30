@@ -68,6 +68,10 @@ class MainWindow(QMainWindow):
         self.loadTCBtn.clicked.connect(self.openFileNameDialog)
 
     def initBoardUI(self):
+        while self.field.count():
+            child = self.field.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
         for row in range(self.ms.size):
             for col in range(self.ms.size):
                 button = QPushButton()
