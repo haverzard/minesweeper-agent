@@ -44,8 +44,7 @@ class MainWindow(QMainWindow):
         # const
         self.delay = 0.1
         # state
-        self.started = False
-        self.paused = False
+        self.state = { 'paused': False, 'started': False }
 
     def changeDelay(self):
         self.delay = float(self.delayTextEdit.toPlainText())
@@ -63,7 +62,7 @@ class MainWindow(QMainWindow):
     def setupUI(self):
         # main menu page
         self.playGameBtn.clicked.connect(lambda: self.changePage(PageIdx.IN_GAME))
-        self.exitBtn.clicked.connect(lambda: self.close())
+        self.exitBtn.clicked.connect(lambda: exit())
         # in game page
         self.startPauseGameBtn.clicked.connect(self.startPauseGameBtnClickedHandler)
         self.stopQuitGameBtn.clicked.connect(self.stopQuitGameBtnClickedHandler)
@@ -115,19 +114,19 @@ class MainWindow(QMainWindow):
         self.ms.init_agent(size, bcounts, coords)
 
     def stopQuitGameBtnClickedHandler(self):
-        if not self.started:
+        if not self.state['started']:
             self.changePage(PageIdx.MAIN_MENU)
         else: 
             self.stopQuitGameBtn.setText('Quit Game')
             self.startPauseGameBtn.setText('Play Game')
-            self.started = False
-            self.paused = False
+            self.state['started'] = False
+            self.state['paused'] = False
 
     # Handler methods
     def startPauseGameBtnClickedHandler(self):
-        if self.paused:
+        if self.state['paused']:
             self.startPauseGameBtn.setText('Resume Game')
-            self.paused = False
+            self.state['paused'] = False
             return
         elif self.ms is None:
             print("Minesweeper Agent is not initialized")
@@ -135,14 +134,14 @@ class MainWindow(QMainWindow):
         else:
             self.startPauseGameBtn.setText('Pause Game')
             self.stopQuitGameBtn.setText('Stop Game')
-            self.started = True
+            self.state['started'] = True
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
         self.gameSignals.flag_cell.connect(self.updateFlaggedCellUI)
         self.gameSignals.history.connect(self.updateHistory)
         # create worker
         self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, 
-                delay=self.delay,
+                delay=self.delay, state=self.state
             )
         # connect signals
         self.worker.signals.exception.connect(self.gameThreadException)
