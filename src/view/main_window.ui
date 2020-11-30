@@ -291,7 +291,7 @@ border: 2px solid #000;
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="quitGameBtn">
+     <widget class="QPushButton" name="stopQuitGameBtn">
       <property name="geometry">
        <rect>
         <x>900</x>
@@ -309,7 +309,7 @@ font: 87 10pt &quot;Montserrat Bold&quot;;</string>
        <string>Quit Game</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="startGameBtn">
+     <widget class="QPushButton" name="startPauseGameBtn">
       <property name="geometry">
        <rect>
         <x>740</x>

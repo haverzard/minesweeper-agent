@@ -41,7 +41,7 @@ class MinesweeperAgent():
             for col in range(size):
                 self.env.assert_string(f"(tile (x {col}) (y {size-row-1}) (value {self.board[row][col]}))")
 
-    def run_and_evaluate(self, signals=None, delay=0):
+    def run_and_evaluate(self, signals=None, delay=0, is_started = True, is_paused = False):
         # unpack signals
         cell_status_signal = signals.cell_status if (signals is not None) else None
         flag_cell_signal = signals.flag_cell if (signals is not None) else None
@@ -124,3 +124,9 @@ class MinesweeperAgent():
             time.sleep(delay)
             i += 1
         del self.board, self.board_mask
+
+        if not is_started:
+            return
+
+        while is_paused:
+            time.sleep(0.3)

@@ -41,8 +41,11 @@ class MainWindow(QMainWindow):
         self.worker = None
         # signals
         self.gameSignals = GameSignals()
-        # fields
+        # const
         self.delay = 0.1
+        # state
+        self.started = False
+        self.paused = False
 
     def changeDelay(self):
         self.delay = float(self.delayTextEdit.toPlainText())
@@ -62,8 +65,8 @@ class MainWindow(QMainWindow):
         self.playGameBtn.clicked.connect(lambda: self.changePage(PageIdx.IN_GAME))
         self.exitBtn.clicked.connect(lambda: self.close())
         # in game page
-        self.startGameBtn.clicked.connect(self.startGameBtnClickedHandler)
-        self.quitGameBtn.clicked.connect(lambda: self.changePage(PageIdx.MAIN_MENU))
+        self.startPauseGameBtn.clicked.connect(self.startPauseGameBtnClickedHandler)
+        self.stopQuitGameBtn.clicked.connect(self.stopQuitGameBtnClickedHandler)
         self.delayPlayBtn.clicked.connect(self.changeDelay)
         self.loadTCBtn.clicked.connect(self.openFileNameDialog)
         # Setup field
@@ -105,24 +108,42 @@ class MainWindow(QMainWindow):
         self.historyField.insertPlainText(matched_text)
         del matched_text, selected_text
 
-
     # Game methods
     def initAgent(self, filepath="../tests/tc1.txt"):
         size, bcounts, coords = process_input(filepath)
         self.ms = MinesweeperAgent(["model/template_facts.clp", "model/rules.clp", "model/minesweeper.clp"])
         self.ms.init_agent(size, bcounts, coords)
 
+    def stopQuitGameBtnClickedHandler(self):
+        if not self.started:
+            self.changePage(PageIdx.MAIN_MENU)
+        else: 
+            self.stopQuitGameBtn.setText('Quit Game')
+            self.startPauseGameBtn.setText('Play Game')
+            self.started = False
+            self.paused = False
+
     # Handler methods
-    def startGameBtnClickedHandler(self):
-        if self.ms is None:
+    def startPauseGameBtnClickedHandler(self):
+        if self.paused:
+            self.startPauseGameBtn.setText('Resume Game')
+            self.paused = False
+            return
+        elif self.ms is None:
             print("Minesweeper Agent is not initialized")
             return
+        else:
+            self.startPauseGameBtn.setText('Pause Game')
+            self.stopQuitGameBtn.setText('Stop Game')
+            self.started = True
         # connect game signals
         self.gameSignals.cell_status.connect(self.updateCellUI)
         self.gameSignals.flag_cell.connect(self.updateFlaggedCellUI)
         self.gameSignals.history.connect(self.updateHistory)
         # create worker
-        self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, delay=self.delay)
+        self.worker = Worker(self.ms.run_and_evaluate, signals=self.gameSignals, 
+                delay=self.delay,
+            )
         # connect signals
         self.worker.signals.exception.connect(self.gameThreadException)
         self.worker.signals.result.connect(self.gameThreadResult)
