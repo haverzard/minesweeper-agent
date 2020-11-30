@@ -16,6 +16,25 @@
     (if (and (>= ?x 0) (< ?x ?s) (>= ?y 0) (< ?y ?s)) then 1 else 0)
 )
 
+;;; Same tile
+(deffunction same-tile (?x1 ?y1 ?x2 ?y2)
+    (and (= ?x1 ?x2) (= ?y1 ?y2))
+)
+
+;;; Get all possible neighbours
+(deffunction get-neighbours (?x ?y)
+    (create$
+        (- ?x 1) ?y
+        (+ ?x 1) ?y
+        ?x       (- ?y 1)
+        ?x       (+ ?y 1)
+        (- ?x 1) (- ?y 1)
+        (- ?x 1) (+ ?y 1)
+        (+ ?x 1) (- ?y 1)
+        (+ ?x 1) (+ ?y 1)
+    )
+)
+
 ;;; #######################
 ;;; BOMB NEIGHBOURS
 ;;; #######################
@@ -41,37 +60,17 @@
     (flagged (x ?x) (y ?y))
     (board-size ?s)
     =>
-    (and (in-range ?x (- ?y 1) ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range ?x (+ ?y 1) ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (- ?x 1) ?y ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (+ ?x 1) ?y ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (+ ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (+ ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (- ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (- ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff unidentified-bomb-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
+    (bind ?neighbours (get-neighbours ?x ?y))
+    (while (!= (length ?neighbours) 0) do
+        (bind ?i (nth$ 1 ?neighbours))
+        (bind ?j (nth$ 2 ?neighbours))
+        (if (in-range ?i ?j ?s)
+            then
+            (do-for-fact ((?ff unidentified-bomb-neighbours)) (same-tile ?i ?j ?ff:x ?ff:y)
+                (modify ?ff (count (- ?ff:count 1)))
+            )
+        )
+        (bind ?neighbours (delete$ ?neighbours 1 2))
     )
 )
 
@@ -111,37 +110,17 @@
     (clicked (x ?x) (y ?y))
     (board-size ?s)
     =>
-    (and (in-range ?x (- ?y 1) ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range ?x (+ ?y 1) ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (- ?x 1) ?y ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (+ ?x 1) ?y ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (+ ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (+ ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (- ?x 1) (- ?y 1) ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
-    )
-    (and (in-range (- ?x 1) (+ ?y 1) ?s)
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
-            (modify ?ff (count (- ?ff:count 1))))
+    (bind ?neighbours (get-neighbours ?x ?y))
+    (while (!= (length ?neighbours) 0) do
+        (bind ?i (nth$ 1 ?neighbours))
+        (bind ?j (nth$ 2 ?neighbours))
+        (if (in-range ?i ?j ?s)
+            then
+            (do-for-fact ((?ff closed-neighbours)) (same-tile ?i ?j ?ff:x ?ff:y)
+                (modify ?ff (count (- ?ff:count 1)))
+            )
+        )
+        (bind ?neighbours (delete$ ?neighbours 1 2))
     )
 )
 
@@ -167,38 +146,19 @@
     (open-condition (x ?x) (y ?y) (cond ?z))
     (board-size ?s)
     =>
-    (and (in-range ?x (- ?y 1) ?s) (
-        and (assert (opened (x ?x) (y (- ?y 1))))
-        (assert (open-condition (x ?x) (y (- ?y 1)) (cond ?z)))
-    ))
-    (and (in-range ?x (+ ?y 1) ?s) (
-        and (assert (opened (x ?x) (y (+ ?y 1))))
-        (assert (open-condition (x ?x) (y (+ ?y 1)) (cond ?z)))
-    ))
-    (and (in-range (- ?x 1) ?y ?s) (
-        and (assert (opened (x (- ?x 1)) (y ?y)))
-        (assert (open-condition (x (- ?x 1)) (y ?y) (cond ?z)))
-    ))
-    (and (in-range (+ ?x 1) ?y ?s) (
-        and (assert (opened (x (+ ?x 1)) (y ?y)))
-        (assert (open-condition (x (+ ?x 1)) (y ?y) (cond ?z)))
-    ))
-    (and (in-range (+ ?x 1) (- ?y 1) ?s) (
-        and (assert (opened (x (+ ?x 1)) (y (- ?y 1))))
-        (assert (open-condition (x (+ ?x 1)) (y (- ?y 1)) (cond ?z)))
-    ))    
-    (and (in-range (+ ?x 1) (+ ?y 1) ?s) (
-        and (assert (opened (x (+ ?x 1)) (y (+ ?y 1))))
-        (assert (open-condition (x (+ ?x 1)) (y (+ ?y 1)) (cond ?z)))
-    ))
-    (and (in-range (- ?x 1) (- ?y 1) ?s) (
-        and (assert (opened (x (- ?x 1)) (y (- ?y 1))))
-        (assert (open-condition (x (- ?x 1)) (y (- ?y 1)) (cond ?z)))
-    ))
-    (and (in-range (- ?x 1) (+ ?y 1) ?s) (
-        and (assert (opened (x (- ?x 1)) (y (+ ?y 1))))
-        (assert (open-condition (x (- ?x 1)) (y (+ ?y 1)) (cond ?z)))
-    ))
+    (bind ?neighbours (get-neighbours ?x ?y))
+    (while (!= (length ?neighbours) 0) do
+        (bind ?i (nth$ 1 ?neighbours))
+        (bind ?j (nth$ 2 ?neighbours))
+        (if (in-range ?i ?j ?s)
+            then
+            (and 
+                (assert (opened (x ?i) (y ?j)))
+                (assert (open-condition (x ?i) (y ?j) (cond ?z)))
+            )            
+        )
+        (bind ?neighbours (delete$ ?neighbours 1 2))
+    )
 )
 
 ;;; #######################
@@ -289,101 +249,23 @@
 ;;; and also we indicate the tiles are opened after bomb discovery
 ;;; with opened-bomb fact
 (deffunction discover-free (?x ?y ?s)
-    (if (in-range ?x (+ ?y 1) ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
+    (bind ?neighbours (get-neighbours ?x ?y))
+    (while (!= (length ?neighbours) 0) do
+        (bind ?i (nth$ 1 ?neighbours))
+        (bind ?j (nth$ 2 ?neighbours))
+        (if (in-range ?i ?j ?s)
+            then
+            (do-for-fact ((?ff open-condition)) (same-tile ?i ?j ?ff:x ?ff:y)
+                (if (any-factp ((?fx clicked)) (same-tile ?ff:x ?ff:y ?fx:x ?fx:y))
+                    then
+                    else
+                    (assert (opened (x ?ff:x) (y ?ff:y)))
+                    (modify ?ff (cond 0))
+                    (assert (opened-nobomb ?ff:x ?ff:y))
+                )
             )
         )
-    )
-    (if (in-range ?x (- ?y 1) ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
-            )
-        )
-    )
-    (if (in-range (- ?x 1) ?y ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
-            )
-        )
-    )
-    (if (in-range (+ ?x 1) ?y ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
-            )
-        )
-    )
-    (if (in-range (- ?x 1) (- ?y 1) ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
-            )
-        )
-    )
-    (if (in-range (- ?x 1) (+ ?y 1) ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
-            )
-        )
-    )
-    (if (in-range (+ ?x 1) (- ?y 1) ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
-            )
-        )
-    )
-    (if (in-range (+ ?x 1) (+ ?y 1) ?s)
-        then
-        (do-for-fact ((?ff open-condition)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (assert (opened (x ?ff:x) (y ?ff:y)))
-                (modify ?ff (cond 0))
-                (assert (opened-nobomb ?ff:x ?ff:y))
-            )
-        )
+        (bind ?neighbours (delete$ ?neighbours 1 2))
     )
 )
 
@@ -409,117 +291,25 @@
 ;;; Flag all closed neighbour tiles as bombs
 ;;; We also assume flagging as clicking too
 (deffunction flagged-bombs (?x ?y ?s)
-    (if (in-range ?x (+ ?y 1) ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (+ ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
+    (bind ?neighbours (get-neighbours ?x ?y))
+    (while (!= (length ?neighbours) 0) do
+        (bind ?i (nth$ 1 ?neighbours))
+        (bind ?j (nth$ 2 ?neighbours))
+        (if (in-range ?i ?j ?s)
+            then
+            (do-for-fact ((?ff closed-neighbours)) (same-tile ?i ?j ?ff:x ?ff:y)
+                (if (any-factp ((?fx clicked)) (same-tile ?ff:x ?ff:y ?fx:x ?fx:y))
+                    then
+                    else
+                    (and
+                        (assert (flagged (x ?ff:x) (y ?ff:y)))
+                        (assert (clicked (x ?ff:x) (y ?ff:y)))
+                        (assert (bomb ?ff:x ?ff:y))
+                    )
                 )
             )
         )
-    )
-    (if (in-range ?x (- ?y 1) ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x ?x) (= ?ff:y (- ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
-                )
-            )
-        )
-    )
-    (if (in-range (- ?x 1) ?y ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y ?y))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
-                )
-            )
-        )
-    )
-    (if (in-range (+ ?x 1) ?y ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y ?y))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
-                )
-            )
-        )
-    )
-    (if (in-range (- ?x 1) (- ?y 1) ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (- ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
-                )
-            )
-        )
-    )
-    (if (in-range (- ?x 1) (+ ?y 1) ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (- ?x 1)) (= ?ff:y (+ ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
-                )
-            )
-        )
-    )
-    (if (in-range (+ ?x 1) (- ?y 1) ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (- ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
-                )
-            )
-        )
-    )
-    (if (in-range (+ ?x 1) (+ ?y 1) ?s)
-        then
-        (do-for-fact ((?ff closed-neighbours)) (and (= ?ff:x (+ ?x 1)) (= ?ff:y (+ ?y 1)))
-            (if (any-factp ((?fx clicked)) (and (= ?fx:x ?ff:x) (= ?fx:y ?ff:y)))
-                then
-                else
-                (and
-                    (assert (flagged (x ?ff:x) (y ?ff:y)))
-                    (assert (clicked (x ?ff:x) (y ?ff:y)))
-                    (assert (bomb ?ff:x ?ff:y))
-                )
-            )
-        )
+        (bind ?neighbours (delete$ ?neighbours 1 2))
     )
 )
 
