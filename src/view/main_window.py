@@ -141,6 +141,7 @@ class MainWindow(QMainWindow):
         print("Reached goal at Iteration {}".format(self.ms.max_steps_to_goal))
         print("Finished cycle at Iteration {}".format(self.ms.max_steps_to_finish))
         print(self.ms.predicted_bombs)
+        del self.ms.predicted_bombs, self.ms.env, self.ms
 
     # Helper methods
     def spawnDialogWindow(self, title, text, yesBtnLbl="Yes", noBtnLbl="No",
