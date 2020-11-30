@@ -71,7 +71,7 @@ class MainWindow(QMainWindow):
     def setupUI(self):
         # main menu page
         self.playGameBtn.clicked.connect(lambda: self.changePage(PageIdx.IN_GAME))
-        self.exitBtn.clicked.connect(lambda: self.close())
+        self.exitBtn.clicked.connect(lambda: exit)
         # in game page
         self.startGameBtn.clicked.connect(self.startGameBtnClickedHandler)
         self.quitGameBtn.clicked.connect(lambda: self.changePage(PageIdx.MAIN_MENU))
