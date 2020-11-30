@@ -123,10 +123,14 @@ class MinesweeperAgent():
 
             time.sleep(delay)
             i += 1
+            
+            if not state['started']:
+                return
+
+            while state['paused']:
+                # time.sleep(0.3)
+                pass
+
         del self.board, self.board_mask
 
-        if not state['started']:
-            return
-
-        while state['paused']:
-            time.sleep(0.3)
+        
