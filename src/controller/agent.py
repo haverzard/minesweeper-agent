@@ -51,7 +51,8 @@ class MinesweeperAgent():
             self.max_fact_id = fact.index
             print(fact)
         # run
-        for i in range(1600):
+        i = 0
+        while True:
             selected_rule = None
             for act in self.env.activations():
                 selected_rule = str(act)
@@ -99,6 +100,9 @@ class MinesweeperAgent():
                         x, y = map(int, re.findall(r"\(flagged \(x (\d+)\) \(y (\d+)\)\)", str_fact)[0])
                         if flag_cell_signal:
                             flag_cell_signal.emit(self.size-y-1, x)
+                    if "failed " in str_fact:
+                        print(str_fact)
+                        exit()
                     print(fact)
 
                 if history_signal:
@@ -119,3 +123,4 @@ class MinesweeperAgent():
                 print()
 
             time.sleep(delay)
+            i += 1
